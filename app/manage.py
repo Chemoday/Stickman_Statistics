@@ -3,8 +3,10 @@ import os
 from app import create_app
 from flask_script import Manager
 
-app = create_app(os.getenv('FLASK_CONFIG') or 'default')
-manager = Manager(app)
+
+
+manager = Manager(create_app)
+
 
 
 @manager.command
@@ -16,6 +18,11 @@ def generate_db_stat_tables():
     from models.statistics.models import MODELS_LIST
     db.create_tables(MODELS_LIST, safe=True)
     print("Db tables created")
+
+
+
+manager.add_option('-c', '--config', dest='config_name', required=False)
+
 
 
 if __name__ == '__main__':

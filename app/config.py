@@ -11,9 +11,8 @@ class Config:
 
     #manage stuff
     REGISTRATION_OPEN = True
-    @staticmethod
-    def init_app(app):
-        pass
+
+
 
 
 class DevelopmentConfig(Config):
@@ -24,8 +23,18 @@ class DevelopmentConfig(Config):
     user= 'postgres'
     password = 'postgres'
     DATABASE = peewee.PostgresqlDatabase('stickman', user=user, password=password,
-                                         host=host, port=port, autorollback=True)
+                                         host=host, port=port, autorollback=False)
 
+
+class ProductionConfig(Config):
+    DEBUG = False
+
+    host= 'localhost'
+    port= 5444
+    user= 'postgres'
+    password = 'postgres'
+    DATABASE = peewee.PostgresqlDatabase('stickman', user=user, password=password,
+                                         host=host, port=port, autorollback=True)
 
 class TestingConfig(Config):
     TESTING = True
@@ -39,17 +48,9 @@ class TestingConfig(Config):
     def database_type(self):
         return peewee.SqliteDatabase('test.db')
 
-class ProductionConfig(Config):
-    TESTING = True
-    DEBUG = True
-    DATABASE = {
-        'name': 'test.db',
-        'engine': 'peewee.SqliteDatabase'
-    }
-
 config_select = {
     'development': DevelopmentConfig,
     'testing': TestingConfig,
     'production': ProductionConfig,
-    'default': DevelopmentConfig
+    'default': ProductionConfig
 }

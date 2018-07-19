@@ -7,9 +7,17 @@ from app.config import config_select
 db = Proxy()
 bootstrap = Bootstrap()
 
-def create_app(config_name):
+
+def create_app(config_name="None"):
     app = Flask(__name__)
-    app.config.from_object(config_select[config_name])
+
+
+    #default config = production
+    if config_name==None:
+        config_name = 'default'
+        app.config.from_object(config_select['default'])
+    else:
+        app.config.from_object(config_select[config_name])
 
     db.initialize(config_select[config_name].DATABASE)
     bootstrap.init_app(app)
