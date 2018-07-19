@@ -3,7 +3,7 @@ from flask import request, abort, make_response, jsonify
 
 def validate_int_json_data(argument_name):
     """
-    Argument might be account_id, profile_id, user_id or anything else.
+    Argument must be type on int
     """
 
 
@@ -41,7 +41,7 @@ def validate_int_json_data(argument_name):
 
 def validate_string_json_data(argument_name):
     """
-    Argument might be account_id, profile_id, user_id or anything else.
+    Argument must be type of sting
     """
 
 

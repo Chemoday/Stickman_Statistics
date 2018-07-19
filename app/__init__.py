@@ -15,11 +15,10 @@ def create_app(config_name="None"):
     #default config = production
     if config_name==None:
         config_name = 'default'
-        app.config.from_object(config_select['default'])
-    else:
-        app.config.from_object(config_select[config_name])
 
-    db.initialize(config_select[config_name].DATABASE)
+
+    app.config.from_object(config_select[config_name])
+    db.initialize(config_select[config_name].DATABASE) #initialize a real db via proxy
     bootstrap.init_app(app)
 
     #register blueprints

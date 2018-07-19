@@ -1,5 +1,11 @@
-import os
 
+#Define Python project in PYTHONPATH
+import sys
+from os.path import dirname, abspath
+PROJECT_DIR = dirname(dirname(abspath(__file__)))
+sys.path.append(PROJECT_DIR)
+
+#Initial project
 from app import create_app
 from flask_script import Manager
 

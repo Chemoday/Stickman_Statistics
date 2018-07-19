@@ -65,5 +65,9 @@ class GameRounds(BaseModel):
     most_deaths = IntegerField()
     created_dt = DateTimeField(default=datetime.datetime.now())
 
+    @staticmethod
+    def insert_gamerounds(gamerounds_list):
+        with db.atomic():
+            GameRounds.insert_many(gamerounds_list).execute()
 
 MODELS_LIST = [Admins, GameRounds]
