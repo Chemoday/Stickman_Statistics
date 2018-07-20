@@ -9,6 +9,12 @@ from app.utils.auth import token_generator
 
 
 class BaseModel(Model):
+
+    @staticmethod
+    def insert_bulk_data(self, data_to_insert):
+        with db.atomic():
+            self.insert_many(data_to_insert).execute()
+
     class Meta:
         database = db
         schema = 'stat'
@@ -65,9 +71,27 @@ class GameRounds(BaseModel):
     most_deaths = IntegerField()
     created_dt = DateTimeField(default=datetime.datetime.now())
 
-    @staticmethod
-    def insert_gamerounds(gamerounds_list):
-        with db.atomic():
-            GameRounds.insert_many(gamerounds_list).execute()
+    class Meta:
+        table_name = 'game_rounds'
 
-MODELS_LIST = [Admins, GameRounds]
+
+class TutorialFlow(BaseModel):
+    phase = CharField(index=True, max_length=25)
+    completion_time = IntegerField(default=0)
+    deaths = IntegerField(default=0)
+    grenade_used = BooleanField(default=False)
+    weapon_changed = BooleanField(default=False)
+    crouch_used = BooleanField(default=False)
+
+
+    class Meta:
+        table_name = 'tutorial_flow'
+
+class SettingsJoystick(BaseModel):
+    user_id = IntegerField(unique=True)
+    controls_type = CharField(index=True)
+    changed = BooleanField(default=0)
+
+
+
+MODELS_LIST = [Admins, GameRounds, TutorialFlow]

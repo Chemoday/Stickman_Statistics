@@ -3,8 +3,9 @@ from models.statistics.models import *
 from . import statistics
 
 
-GAMEROUNDS_CACHE = []
-GAMEROUNDS_CACHE_LIMIT = 8
+GAMEROUNDS_STRUCT_CACHE = []
+SETTINGS_JOYSTICK_CACHE = []
+CACHE_SIZE = 20
 
 @statistics.route('/test', methods=['POST'])
 def test():
@@ -18,10 +19,9 @@ def test():
 
 
 
-#TODO ATT HANDLER FOR
 @statistics.route('/round/save', methods=['POST'])
 def save_round_stat():
-    global GAMEROUNDS_CACHE
+    global GAMEROUNDS_STRUCT_CACHE
     json = request.get_json(force=True)
     try:
 
@@ -39,17 +39,49 @@ def save_round_stat():
     except Exception as e:
         return jsonify({
             'result': 'Error',
-            'reason': e
+            'reason': 'Missing data, check attributes'
         })
 
-    if len(GAMEROUNDS_CACHE) >= GAMEROUNDS_CACHE_LIMIT:
-        GameRounds.insert_gamerounds(GAMEROUNDS_CACHE)
-        GAMEROUNDS_CACHE = []
+    if len(GAMEROUNDS_STRUCT_CACHE) >= CACHE_SIZE:
+        GameRounds.insert_bulk_data(data_to_insert=GAMEROUNDS_STRUCT_CACHE)
+        GAMEROUNDS_STRUCT_CACHE = [] #clearing cache
     else:
-        GAMEROUNDS_CACHE.append(round)
+        GAMEROUNDS_STRUCT_CACHE.append(round)
 
-
-    #TODO CHECK PERFORMANCE AND MAKE BULK INSERT IF NEEDED, STORE IN CACHE AND LOAD AFTER 100 rounds
     return jsonify({
         'result': 'OK'
     })
+
+
+@statistics.route('/settings/joystick/save', methods=['POST'])
+def save_settings_joistick():
+    global SETTINGS_JOYSTICK_CACHE
+    json = request.get_json(force=True)
+
+    pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
