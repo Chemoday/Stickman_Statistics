@@ -92,6 +92,8 @@ class SettingsJoystick(BaseModel):
     controls_type = CharField(index=True)
     changed = BooleanField(default=0)
 
+    class Meta:
+        table_name = 'settings_joystick'
 
 
-MODELS_LIST = [Admins, GameRounds, TutorialFlow]
+MODELS_LIST = [Admins, GameRounds, TutorialFlow, SettingsJoystick]

@@ -15,7 +15,7 @@ def test():
     print("________________")
     json = request.get_json()
     print(json)
-    return jsonify({"result": "ok"})
+    return jsonify({"result": "OK"})
 
 
 
@@ -38,7 +38,7 @@ def save_round_stat():
 
     except Exception as e:
         return jsonify({
-            'result': 'Error',
+            'result': 'ERROR',
             'reason': 'Missing data, check attributes'
         })
 
@@ -58,11 +58,43 @@ def save_settings_joistick():
     global SETTINGS_JOYSTICK_CACHE
     json = request.get_json(force=True)
 
-    pass
+    try:
+        user_id = json['user_id']
+        controls_type = json['controls_type']
+
+    except Exception as e:
+        return jsonify({
+            'result': 'ERROR',
+            'reason': 'Missing data, check attributes'
+        })
 
 
+    if SettingsJoystick.select().where(SettingsJoystick.user_id == user_id).exists():
+        settings = SettingsJoystick.get(SettingsJoystick.user_id == user_id)
+        if settings.controls_type != controls_type:
+            #complex query for update, just to make it fast - atomic
+            SettingsJoystick.update({SettingsJoystick.controls_type: controls_type,
+                                     SettingsJoystick.changed: True}).where(
+                SettingsJoystick.user_id == user_id).execute()
+            print('updated')
+    else:
+        SettingsJoystick.insert(user_id=user_id, controls_type=controls_type).execute()
 
 
+    return jsonify({
+        'result': 'OK'
+    })
+
+
+#TODO resolve this shit, rewrite
+def check_cache_condition(cache_type, model):
+    global GAMEROUNDS_STRUCT_CACHE, SETTINGS_JOYSTICK_CACHE
+
+    if len(GAMEROUNDS_STRUCT_CACHE) >= CACHE_SIZE:
+        model.insert_bulk_data(data_to_insert=GAMEROUNDS_STRUCT_CACHE)
+        cache_type = [] #clearing cache
+    else:
+        cache_type.append(round)
 
 
 
