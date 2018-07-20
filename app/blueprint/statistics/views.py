@@ -122,7 +122,7 @@ def save_tutorial_flow():
 
 
 
-#TODO resolve this shit, rewrite
+#TODO resolve this shit, rewriteq
 def check_cache_condition(cache_type, model):
     global GAMEROUNDS_STRUCT_CACHE, SETTINGS_JOYSTICK_CACHE
 
