@@ -10,10 +10,10 @@ from app.utils.auth import token_generator
 
 class BaseModel(Model):
 
-    @staticmethod
-    def insert_bulk_data(self, data_to_insert):
+    @classmethod
+    def insert_bulk_data(cls, data_to_insert):
         with db.atomic():
-            self.insert_many(data_to_insert).execute()
+            cls.insert_many(data_to_insert).execute()
 
     class Meta:
         database = db

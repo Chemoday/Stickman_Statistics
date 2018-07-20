@@ -5,7 +5,8 @@ from . import statistics
 
 GAMEROUNDS_STRUCT_CACHE = []
 SETTINGS_JOYSTICK_CACHE = []
-CACHE_SIZE = 20
+TUTORIAL_FLOW_CACHE = []
+CACHE_SIZE = 5
 
 @statistics.route('/test', methods=['POST'])
 def test():
@@ -27,7 +28,7 @@ def save_round_stat():
 
             #mode = validate_string_json_data('mode')
             #TODO add validators
-            round = {'mode': json['mode'],
+            round_struct = {'mode': json['mode'],
                          'type': json['type'],
                          'map': json['map'],
                          'total_players': json['total_players'],
@@ -46,7 +47,7 @@ def save_round_stat():
         GameRounds.insert_bulk_data(data_to_insert=GAMEROUNDS_STRUCT_CACHE)
         GAMEROUNDS_STRUCT_CACHE = [] #clearing cache
     else:
-        GAMEROUNDS_STRUCT_CACHE.append(round)
+        GAMEROUNDS_STRUCT_CACHE.append(round_struct)
 
     return jsonify({
         'result': 'OK'
@@ -84,6 +85,41 @@ def save_settings_joistick():
     return jsonify({
         'result': 'OK'
     })
+
+@statistics.route('/tutorial-flow/save', methods=['POST'])
+def save_tutorial_flow():
+    global TUTORIAL_FLOW_CACHE
+    json = request.get_json(force=True)
+
+    try:
+        tutorial = {
+            'phase': json['phase'],
+            'completion_time': json['completion_time'],
+            'deaths': json['deaths'],
+            'grenade_used': json['grenade_used'],
+            'weapon_changed': json['weapon_changed'],
+            'crouch_used': json['crouch_used']
+        }
+
+    except Exception as e:
+        print(e)
+        return jsonify({
+            'result': 'ERROR',
+            'reason': 'Missing data, check attributes',
+            'exception': e
+        })
+
+    if len(TUTORIAL_FLOW_CACHE) >= CACHE_SIZE:
+        TutorialFlow.insert_bulk_data(data_to_insert=TUTORIAL_FLOW_CACHE)
+        TUTORIAL_FLOW_CACHE = [] #clearing cache
+    else:
+        TUTORIAL_FLOW_CACHE.append(tutorial)
+
+    return jsonify({
+        'result': 'OK'
+    })
+
+
 
 
 #TODO resolve this shit, rewrite
