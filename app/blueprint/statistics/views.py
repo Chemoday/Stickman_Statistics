@@ -3,11 +3,6 @@ from models.statistics.models import *
 from . import statistics
 
 
-GAMEROUNDS_STRUCT_CACHE = []
-SETTINGS_JOYSTICK_CACHE = []
-TUTORIAL_FLOW_CACHE = []
-CACHE_SIZE = 5
-
 @statistics.route('/test', methods=['POST'])
 def test():
     print("in func")
@@ -22,7 +17,7 @@ def test():
 
 @statistics.route('/round/save', methods=['POST'])
 def save_round_stat():
-    global GAMEROUNDS_STRUCT_CACHE
+
     json = request.get_json(force=True)
     try:
 
@@ -43,11 +38,7 @@ def save_round_stat():
             'reason': 'Missing data, check attributes'
         })
 
-    if len(GAMEROUNDS_STRUCT_CACHE) >= CACHE_SIZE:
-        GameRounds.insert_bulk_data(data_to_insert=GAMEROUNDS_STRUCT_CACHE)
-        GAMEROUNDS_STRUCT_CACHE = [] #clearing cache
-    else:
-        GAMEROUNDS_STRUCT_CACHE.append(round_struct)
+    GameRounds.check_cache_condition(cache_type='gameRounds', data=round_struct)
 
     return jsonify({
         'result': 'OK'
@@ -56,7 +47,6 @@ def save_round_stat():
 
 @statistics.route('/settings/joystick/save', methods=['POST'])
 def save_settings_joistick():
-    global SETTINGS_JOYSTICK_CACHE
     json = request.get_json(force=True)
 
     try:
@@ -88,7 +78,6 @@ def save_settings_joistick():
 
 @statistics.route('/tutorial-flow/save', methods=['POST'])
 def save_tutorial_flow():
-    global TUTORIAL_FLOW_CACHE
     json = request.get_json(force=True)
 
     try:
@@ -109,31 +98,11 @@ def save_tutorial_flow():
             'exception': e
         })
 
-    if len(TUTORIAL_FLOW_CACHE) >= CACHE_SIZE:
-        TutorialFlow.insert_bulk_data(data_to_insert=TUTORIAL_FLOW_CACHE)
-        TUTORIAL_FLOW_CACHE = [] #clearing cache
-    else:
-        TUTORIAL_FLOW_CACHE.append(tutorial)
+    TutorialFlow.check_cache_condition(cache_type='tutorialFlow', data=tutorial)
 
     return jsonify({
         'result': 'OK'
     })
-
-
-
-
-#TODO resolve this shit, rewriteq
-def check_cache_condition(cache_type, model):
-    global GAMEROUNDS_STRUCT_CACHE, SETTINGS_JOYSTICK_CACHE
-
-    if len(GAMEROUNDS_STRUCT_CACHE) >= CACHE_SIZE:
-        model.insert_bulk_data(data_to_insert=GAMEROUNDS_STRUCT_CACHE)
-        cache_type = [] #clearing cache
-    else:
-        cache_type.append(round)
-
-
-
 
 
 

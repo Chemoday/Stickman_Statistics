@@ -9,11 +9,34 @@ from app.utils.auth import token_generator
 
 
 class BaseModel(Model):
+    CASH_SIZE = 15
+    #CASH_TYPE Used to store models to bulk insert after
+    #reduced load on database
+    CASH_TYPE = {
+        'gameRounds': [],
+        'tutorialFlow': [],
+        'settingsJoystick': []
+    }
+
+
 
     @classmethod
     def insert_bulk_data(cls, data_to_insert):
         with db.atomic():
             cls.insert_many(data_to_insert).execute()
+
+
+    @classmethod
+    def check_cache_condition(cls, cache_type, data):
+        if len(cls.CASH_TYPE[cache_type]) >= cls.CASH_SIZE:
+            try:
+                cls.insert_bulk_data(data_to_insert=cls.CASH_TYPE[cache_type])
+                cls.CASH_TYPE[cache_type].clear() #delete all data from CASH of cache_type
+                print('Pushed to db')
+            except Exception as e:
+                print(e)
+        else:
+            cls.CASH_TYPE[cache_type].append(data)
 
     class Meta:
         database = db
