@@ -37,12 +37,16 @@ class ProductionConfig(Config):
                                          host=host, port=port, autorollback=True)
 
 class TestingConfig(Config):
-    TESTING = True
-    DEBUG = True
-    DATABASE = {
-        'name': 'test.db',
-        'engine': 'peewee.SqliteDatabase'
-    }
+    #
+    DEBUG = False
+
+    host= 'localhost'
+    port= 5444
+    user= 'postgres'
+    password = 'postgres'
+    DATABASE = peewee.PostgresqlDatabase('stickman', user=user, password=password,
+                                         host=host, port=port, autorollback=True)
+
 
     @property
     def database_type(self):
